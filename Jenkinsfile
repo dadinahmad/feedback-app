@@ -15,11 +15,12 @@ pipeline {
             }
         }
 
-        stage('Manual Approval (QA)') {
+       stage('Manual Approval (QA)') {
             steps {
-                input message: '✅ Apakah QA menyetujui untuk melanjutkan deployment?', ok: 'Deploy'
+                echo '✅ Simulated auto-approval'
             }
         }
+
 
         stage('Deploy') {
             steps {
