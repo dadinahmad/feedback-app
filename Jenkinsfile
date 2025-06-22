@@ -7,13 +7,6 @@ pipeline {
         APP_PORT = '8080'
     }
 
-    stages {
-        stage('Clone Repo') {
-            steps {
-                git branch: 'main', url: 'https://github.com/dadinahmad/feedback-app.git'
-            }
-        }
-
         stage('Build') {
             steps {
                 echo '📦 Building Docker image feedback-app:latest...'
