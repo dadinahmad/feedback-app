@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    parameters {
+        booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Centang untuk melakukan deployment setelah build')
+    }
+
     environment {
         IMAGE_NAME = 'feedback-app:latest'
         CONTAINER_NAME = 'feedback-app-container'
@@ -15,16 +19,12 @@ pipeline {
             }
         }
 
-       stage('Manual Approval (QA)') {
-            steps {
-                echo '✅ Simulated auto-approval'
+        stage('Conditional Deploy') {
+            when {
+                expression { return params.DEPLOY }
             }
-        }
-
-
-        stage('Deploy') {
             steps {
-                echo '🚀 Deploying Docker container feedback-app:latest...'
+                echo '🚀 Melakukan deployment karena parameter DEPLOY = true'
                 sh '''
                     if [ $(docker ps -aq -f name=$CONTAINER_NAME) ]; then
                         docker stop $CONTAINER_NAME || true
@@ -33,6 +33,15 @@ pipeline {
 
                     docker run -d --name $CONTAINER_NAME -p $APP_PORT:80 $IMAGE_NAME
                 '''
+            }
+        }
+
+        stage('Skip Deploy') {
+            when {
+                expression { return !params.DEPLOY }
+            }
+            steps {
+                echo '⏩ DEPLOY tidak dicentang, melewati tahap deployment.'
             }
         }
     }
